@@ -45,7 +45,10 @@ function App() {
       if (!response.ok) throw new Error(data.detail || "The assistant could not respond.");
       setMessages([...nextMessages, { role: "assistant", content: data.response }]);
     } catch (requestError) {
-      setError(requestError.message);
+      const message = requestError instanceof Error && requestError.message === "Failed to fetch"
+        ? "The server is unavailable. Start the backend and confirm it is running on the API URL."
+        : requestError.message;
+      setError(message);
     } finally {
       setBusy(false);
     }

@@ -12,10 +12,20 @@ load_dotenv(Path(__file__).with_name(".env"))
 INSTRUCTIONS = Path(__file__).with_name("instructions.txt").read_text(encoding="utf-8")
 MODEL = "qwen/qwen3.8-27b"
 
+DEFAULT_FRONTEND_URLS = (
+    "http://localhost:5173,http://127.0.0.1:5173,"
+    "http://localhost:5174,http://127.0.0.1:5174,"
+    "http://localhost:5175,http://127.0.0.1:5175"
+)
+
 app = FastAPI(title="Vision Chatbot API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("FRONTEND_URL", "http://localhost:5173").split(","),
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv("FRONTEND_URL", DEFAULT_FRONTEND_URLS).split(",")
+        if origin.strip()
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
